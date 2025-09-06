@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}My Applications - PM Internship Recommendation System{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-file-alt me-2"></i>My Applications
+            </h2>
+            <p class="lead text-muted">Track your internship applications and their status</p>
+        </div>
+    </div>
+    
+    <!-- Application Status Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white text-center">
+                <div class="card-body">
+                    <i class="fas fa-paper-plane icon-large"></i>
+                    <h4 class="fw-bold">0</h4>
+                    <p class="mb-0">Total Applications</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white text-center">
+                <div class="card-body">
+                    <i class="fas fa-clock icon-large"></i>
+                    <h4 class="fw-bold">0</h4>
+                    <p class="mb-0">Pending Review</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white text-center">
+                <div class="card-body">
+                    <i class="fas fa-check-circle icon-large"></i>
+                    <h4 class="fw-bold">0</h4>
+                    <p class="mb-0">Accepted</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white text-center">
+                <div class="card-body">
+                    <i class="fas fa-calendar icon-large"></i>
+                    <h4 class="fw-bold">0</h4>
+                    <p class="mb-0">Interviews Scheduled</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Applications List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-list me-2"></i>Application History
+                    </h5>
+                    
+                    <!-- No Applications Message -->
+                    <div class="text-center py-5">
+                        <i class="fas fa-file-alt feature-icon text-muted"></i>
+                        <h4 class="text-muted mt-3">No Applications Yet</h4>
+                        <p class="text-muted mb-4">
+                            You haven't applied to any internships yet. Start exploring opportunities and apply to internships that match your profile.
+                        </p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="{{ url_for('recommendations') }}" class="btn btn-primary">
+                                <i class="fas fa-lightbulb me-2"></i>View Recommendations
+                            </a>
+                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-user-edit me-2"></i>Update Profile
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Sample Application (for demonstration) -->
+                    <!--
+                    <div class="application-item border-bottom py-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h6 class="mb-1">Software Development Intern</h6>
+                                <p class="text-muted mb-1">TechCorp Solutions</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>Applied on: 2025-01-15
+                                </small>
+                            </div>
+                            <div class="col-md-3">
+                                <span class="badge bg-warning">Under Review</span>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Application Tips -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3 class="mb-3">
+                <i class="fas fa-tips me-2"></i>Application Tips
+            </h3>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-check feature-icon text-primary"></i>
+                    <h5 class="card-title">Complete Profile</h5>
+                    <p class="card-text">Ensure your profile is complete with all skills, certifications, and projects before applying.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-file-upload feature-icon text-success"></i>
+                    <h5 class="card-title">Upload Resume</h5>
+                    <p class="card-text">Upload an updated resume to automatically extract skills and improve your profile.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-target feature-icon text-warning"></i>
+                    <h5 class="card-title">Apply Strategically</h5>
+                    <p class="card-text">Focus on internships that match your skills and interests for better success rates.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

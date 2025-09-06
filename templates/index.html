@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Home - PM Internship Recommendation System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-rocket me-3"></i>
+                    Find Your Perfect Internship
+                </h1>
+                <p class="lead mb-4">
+                    AI-powered recommendations tailored to your skills, interests, and location preferences. 
+                    Join thousands of students who have found their dream internships through our platform.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Get Started
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-search feature-icon"></i>
+                <h3>Smart Matching</h3>
+                <p>Our AI analyzes your profile to find the best internship matches</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="container mb-5">
+    <div class="row text-center mb-5">
+        <div class="col-12">
+            <h2 class="display-5 fw-bold mb-3">Why Choose Our Platform?</h2>
+            <p class="lead text-muted">Designed specifically for Indian students with diverse backgrounds</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-brain feature-icon"></i>
+                    <h4 class="card-title">AI-Powered Matching</h4>
+                    <p class="card-text">
+                        Advanced algorithms analyze your skills, education, and preferences to suggest the most relevant internships.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-mobile-alt feature-icon"></i>
+                    <h4 class="card-title">Mobile-First Design</h4>
+                    <p class="card-text">
+                        Optimized for mobile devices with intuitive icons and minimal text for easy navigation.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-language feature-icon"></i>
+                    <h4 class="card-title">Regional Language Support</h4>
+                    <p class="card-text">
+                        Available in multiple Indian languages to serve students from rural and urban areas.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="container mb-5">
+    <div class="row text-center mb-5">
+        <div class="col-12">
+            <h2 class="display-5 fw-bold mb-3">How It Works</h2>
+            <p class="lead text-muted">Simple steps to find your perfect internship</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-3 text-center">
+            <div class="mb-3">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                    <span class="fs-2 fw-bold">1</span>
+                </div>
+            </div>
+            <h5>Create Profile</h5>
+            <p class="text-muted">Sign up and complete your profile with skills, education, and preferences</p>
+        </div>
+        
+        <div class="col-md-3 text-center">
+            <div class="mb-3">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                    <span class="fs-2 fw-bold">2</span>
+                </div>
+            </div>
+            <h5>Upload Resume</h5>
+            <p class="text-muted">Upload your resume for automatic skill extraction and profile enhancement</p>
+        </div>
+        
+        <div class="col-md-3 text-center">
+            <div class="mb-3">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                    <span class="fs-2 fw-bold">3</span>
+                </div>
+            </div>
+            <h5>Get Recommendations</h5>
+            <p class="text-muted">Receive personalized internship recommendations based on your profile</p>
+        </div>
+        
+        <div class="col-md-3 text-center">
+            <div class="mb-3">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                    <span class="fs-2 fw-bold">4</span>
+                </div>
+            </div>
+            <h5>Apply & Succeed</h5>
+            <p class="text-muted">Apply to recommended internships and start your career journey</p>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="container mb-5">
+    <div class="row text-center">
+        <div class="col-md-3">
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <i class="fas fa-users icon-large text-primary"></i>
+                    <h3 class="fw-bold">10,000+</h3>
+                    <p class="text-muted mb-0">Active Students</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <i class="fas fa-briefcase icon-large text-success"></i>
+                    <h3 class="fw-bold">5,000+</h3>
+                    <p class="text-muted mb-0">Available Internships</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <i class="fas fa-building icon-large text-warning"></i>
+                    <h3 class="fw-bold">500+</h3>
+                    <p class="text-muted mb-0">Partner Companies</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <i class="fas fa-star icon-large text-danger"></i>
+                    <h3 class="fw-bold">95%</h3>
+                    <p class="text-muted mb-0">Success Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="container mb-5">
+    <div class="card bg-primary text-white text-center p-5">
+        <div class="card-body">
+            <h2 class="card-title mb-3">
+                <i class="fas fa-rocket me-2"></i>
+                Ready to Start Your Journey?
+            </h2>
+            <p class="card-text lead mb-4">
+                Join thousands of students who have found their perfect internships through our AI-powered platform.
+            </p>
+            <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Get Started Now
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

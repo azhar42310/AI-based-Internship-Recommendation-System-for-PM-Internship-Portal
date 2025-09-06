@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}All Internships - PM Internship Recommendation System{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-2">
+                        <i class="fas fa-list me-2"></i>All Available Internships
+                    </h2>
+                    <p class="text-muted">Browse through all {{ internships.total }} internships</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('recommendations') }}" class="btn btn-primary">
+                        <i class="fas fa-lightbulb me-2"></i>View Recommendations
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search and Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search internships...">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="locationFilter">
+                                <option value="">All Locations</option>
+                                <option value="Work From Home">Work From Home</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Pune">Pune</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="durationFilter">
+                                <option value="">All Durations</option>
+                                <option value="1 month">1 Month</option>
+                                <option value="2 month">2 Months</option>
+                                <option value="3 month">3 Months</option>
+                                <option value="6 month">6 Months</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-primary w-100" onclick="filterInternships()">
+                                <i class="fas fa-filter me-1"></i>Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Internships Grid -->
+    <div class="row" id="internshipsGrid">
+        {% for internship in internships.items %}
+        <div class="col-lg-6 mb-4 internship-card" 
+             data-title="{{ internship.title.lower() }}" 
+             data-location="{{ internship.location.lower() }}" 
+             data-duration="{{ internship.duration.lower() }}">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">{{ internship.title }}</h5>
+                        <span class="badge bg-primary">{{ internship.company_name }}</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <p class="card-text text-muted">{{ internship.about_internship[:150] }}...</p>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                {{ internship.location }}
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ internship.duration }}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="stipend-tag">
+                            <i class="fas fa-rupee-sign me-1"></i>
+                            {{ internship.stipend }}
+                        </span>
+                    </div>
+                    
+                    {% if internship.skills_required %}
+                    <div class="mb-3">
+                        <h6 class="mb-2">
+                            <i class="fas fa-cogs me-1"></i>Required Skills:
+                        </h6>
+                        <div class="skill-tags">
+                            {% for skill in internship.skills_required.split(',')[:3] %}
+                                <span class="skill-tag">{{ skill.strip() }}</span>
+                            {% endfor %}
+                            {% if internship.skills_required.split(',')|length > 3 %}
+                                <span class="skill-tag">+{{ internship.skills_required.split(',')|length - 3 }} more</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            Apply by: {{ internship.apply_by }}
+                        </small>
+                        <div class="btn-group" role="group">
+                            <a href="{{ url_for('internship_detail', internship_id=internship.id) }}" 
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                            <a href="{{ url_for('apply_internship', internship_id=internship.id) }}" 
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-paper-plane me-1"></i>Apply
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if internships.pages > 1 %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav aria-label="Internships pagination">
+                <ul class="pagination justify-content-center">
+                    {% if internships.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('all_internships', page=internships.prev_num) }}">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in internships.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != internships.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('all_internships', page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if internships.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('all_internships', page=internships.next_num) }}">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- No Results -->
+    <div class="row" id="noResults" style="display: none;">
+        <div class="col-12">
+            <div class="card text-center py-5">
+                <div class="card-body">
+                    <i class="fas fa-search feature-icon text-muted"></i>
+                    <h4 class="text-muted mt-3">No Internships Found</h4>
+                    <p class="text-muted">Try adjusting your search criteria or filters.</p>
+                    <button class="btn btn-primary" onclick="clearFilters()">
+                        <i class="fas fa-refresh me-2"></i>Clear Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterInternships() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const locationFilter = document.getElementById('locationFilter').value.toLowerCase();
+    const durationFilter = document.getElementById('durationFilter').value.toLowerCase();
+    
+    const cards = document.querySelectorAll('.internship-card');
+    let visibleCount = 0;
+    
+    cards.forEach(card => {
+        const title = card.dataset.title;
+        const location = card.dataset.location;
+        const duration = card.dataset.duration;
+        
+        const matchesSearch = title.includes(searchTerm);
+        const matchesLocation = !locationFilter || location.includes(locationFilter);
+        const matchesDuration = !durationFilter || duration.includes(durationFilter);
+        
+        if (matchesSearch && matchesLocation && matchesDuration) {
+            card.style.display = 'block';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // Show/hide no results message
+    const noResults = document.getElementById('noResults');
+    if (visibleCount === 0) {
+        noResults.style.display = 'block';
+    } else {
+        noResults.style.display = 'none';
+    }
+}
+
+function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('locationFilter').value = '';
+    document.getElementById('durationFilter').value = '';
+    filterInternships();
+}
+
+// Real-time search
+document.getElementById('searchInput').addEventListener('input', filterInternships);
+document.getElementById('locationFilter').addEventListener('change', filterInternships);
+document.getElementById('durationFilter').addEventListener('change', filterInternships);
+</script>
+{% endblock %}

@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - PM Internship Recommendation System{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-user-edit me-2"></i>Update Your Profile
+            </h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <!-- Personal Information -->
+                        <h4 class="mb-3">
+                            <i class="fas fa-user me-2"></i>Personal Information
+                        </h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="full_name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" 
+                                       value="{{ user.full_name or '' }}" placeholder="Enter your full name">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       value="{{ user.phone or '' }}" placeholder="Enter your phone number">
+                            </div>
+                        </div>
+                        
+                        <!-- Education Information -->
+                        <hr class="my-4">
+                        <h4 class="mb-3">
+                            <i class="fas fa-graduation-cap me-2"></i>Education Information
+                        </h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="education_level" class="form-label">Education Level</label>
+                                <select class="form-control" id="education_level" name="education_level">
+                                    <option value="">Select education level</option>
+                                    <option value="High School" {{ 'selected' if user.education_level == 'High School' else '' }}>High School</option>
+                                    <option value="Diploma" {{ 'selected' if user.education_level == 'Diploma' else '' }}>Diploma</option>
+                                    <option value="Bachelor's Degree" {{ 'selected' if user.education_level == 'Bachelor\'s Degree' else '' }}>Bachelor's Degree</option>
+                                    <option value="Master's Degree" {{ 'selected' if user.education_level == 'Master\'s Degree' else '' }}>Master's Degree</option>
+                                    <option value="PhD" {{ 'selected' if user.education_level == 'PhD' else '' }}>PhD</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="stream" class="form-label">Stream/Field</label>
+                                <select class="form-control" id="stream" name="stream">
+                                    <option value="">Select your stream</option>
+                                    <option value="Computer Science" {{ 'selected' if user.stream == 'Computer Science' else '' }}>Computer Science</option>
+                                    <option value="Electronics" {{ 'selected' if user.stream == 'Electronics' else '' }}>Electronics</option>
+                                    <option value="Mechanical" {{ 'selected' if user.stream == 'Mechanical' else '' }}>Mechanical</option>
+                                    <option value="Civil" {{ 'selected' if user.stream == 'Civil' else '' }}>Civil</option>
+                                    <option value="Business Administration" {{ 'selected' if user.stream == 'Business Administration' else '' }}>Business Administration</option>
+                                    <option value="Marketing" {{ 'selected' if user.stream == 'Marketing' else '' }}>Marketing</option>
+                                    <option value="Finance" {{ 'selected' if user.stream == 'Finance' else '' }}>Finance</option>
+                                    <option value="Human Resources" {{ 'selected' if user.stream == 'Human Resources' else '' }}>Human Resources</option>
+                                    <option value="Design" {{ 'selected' if user.stream == 'Design' else '' }}>Design</option>
+                                    <option value="Other" {{ 'selected' if user.stream == 'Other' else '' }}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Skills -->
+                        <hr class="my-4">
+                        <h4 class="mb-3">
+                            <i class="fas fa-cogs me-2"></i>Skills
+                        </h4>
+                        
+                        <div class="mb-3">
+                            <label for="skills" class="form-label">Technical & Soft Skills</label>
+                            <input type="text" class="form-control" id="skills" name="skills" 
+                                   value="{{ (user.skills|from_json|join(', ')) if user.skills else '' }}" 
+                                   placeholder="e.g., Python, Java, Communication, Leadership">
+                            <div class="form-text">Separate multiple skills with commas</div>
+                        </div>
+                        
+                        <!-- Certifications -->
+                        <div class="mb-3">
+                            <label for="certifications" class="form-label">
+                                <i class="fas fa-certificate me-2"></i>Certifications & Licenses
+                            </label>
+                            <input type="text" class="form-control" id="certifications" name="certifications" 
+                                   value="{{ (user.certifications|from_json|join(', ')) if user.certifications else '' }}" 
+                                   placeholder="e.g., AWS Certified Solutions Architect, Google Analytics Certified, Microsoft Office Specialist, PMP Certification">
+                            <div class="form-text">
+                                <strong>Popular certifications:</strong> AWS, Google Analytics, Microsoft Office, PMP, Scrum Master, 
+                                Digital Marketing, Data Science, Cloud Computing, Cybersecurity
+                            </div>
+                        </div>
+                        
+                        <!-- Projects -->
+                        <div class="mb-3">
+                            <label for="projects" class="form-label">Projects</label>
+                            <input type="text" class="form-control" id="projects" name="projects" 
+                                   value="{{ (user.projects|from_json|join(', ')) if user.projects else '' }}" 
+                                   placeholder="e.g., E-commerce Website, Mobile App, Data Analysis Project">
+                            <div class="form-text">Separate multiple projects with commas</div>
+                        </div>
+                        
+                        <!-- Location Preference -->
+                        <hr class="my-4">
+                        <h4 class="mb-3">
+                            <i class="fas fa-map-marker-alt me-2"></i>Location Preference
+                        </h4>
+                        
+                        <div class="mb-3">
+                            <label for="location_preference" class="form-label">Preferred Location</label>
+                            <select class="form-control" id="location_preference" name="location_preference">
+                                <option value="">Select preferred location</option>
+                                <option value="Work From Home" {{ 'selected' if user.location_preference == 'Work From Home' else '' }}>Work From Home</option>
+                                <option value="Delhi" {{ 'selected' if user.location_preference == 'Delhi' else '' }}>Delhi</option>
+                                <option value="Mumbai" {{ 'selected' if user.location_preference == 'Mumbai' else '' }}>Mumbai</option>
+                                <option value="Bangalore" {{ 'selected' if user.location_preference == 'Bangalore' else '' }}>Bangalore</option>
+                                <option value="Chennai" {{ 'selected' if user.location_preference == 'Chennai' else '' }}>Chennai</option>
+                                <option value="Kolkata" {{ 'selected' if user.location_preference == 'Kolkata' else '' }}>Kolkata</option>
+                                <option value="Hyderabad" {{ 'selected' if user.location_preference == 'Hyderabad' else '' }}>Hyderabad</option>
+                                <option value="Pune" {{ 'selected' if user.location_preference == 'Pune' else '' }}>Pune</option>
+                                <option value="Gurgaon" {{ 'selected' if user.location_preference == 'Gurgaon' else '' }}>Gurgaon</option>
+                                <option value="Noida" {{ 'selected' if user.location_preference == 'Noida' else '' }}>Noida</option>
+                                <option value="Any" {{ 'selected' if user.location_preference == 'Any' else '' }}>Any Location</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Resume Upload -->
+                        <hr class="my-4">
+                        <h4 class="mb-3">
+                            <i class="fas fa-file-upload me-2"></i>Resume Upload & Skill Extraction
+                        </h4>
+                        
+                        <!-- File Upload -->
+                        <div class="mb-3">
+                            <label for="resume" class="form-label">Upload Resume (PDF/DOCX)</label>
+                            <form method="POST" action="{{ url_for('upload_resume') }}" enctype="multipart/form-data">
+                                <div class="input-group">
+                                    <input type="file" class="form-control" id="resume" name="resume" 
+                                           accept=".pdf,.docx,.doc">
+                                    <button class="btn btn-success" type="submit">
+                                        <i class="fas fa-upload me-1"></i>Upload & Extract Skills
+                                    </button>
+                                </div>
+                            </form>
+                            <div class="form-text">
+                                <strong>Supported formats:</strong> PDF, DOCX<br>
+                                <strong>Note:</strong> If file upload fails, you can manually add skills below or paste resume text in the skills field.
+                            </div>
+                        </div>
+                        
+                        <!-- Manual Resume Text Input -->
+                        <div class="mb-3">
+                            <label for="resume_text" class="form-label">
+                                <i class="fas fa-paste me-2"></i>Or Paste Resume Text Here
+                            </label>
+                            <form method="POST" action="{{ url_for('extract_from_text') }}">
+                                <textarea class="form-control" id="resume_text" name="resume_text" rows="6" 
+                                          placeholder="Paste your complete resume text here to automatically extract all profile information..."></textarea>
+                                <div class="form-text">
+                                    <strong>What will be extracted:</strong> Name, Phone, Email, Education, Stream, Skills, Certifications, Projects, Location
+                                </div>
+                                <div class="mt-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-magic me-1"></i>Extract All Profile Data
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary ms-2" onclick="extractSkillsFromText()">
+                                        <i class="fas fa-cogs me-1"></i>Extract Skills Only
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        {% if user.resume_path %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-file me-2"></i>
+                            Resume uploaded: {{ user.resume_path.split('/')[-1] }}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Tips -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-lightbulb me-2"></i>Profile Tips
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Complete all sections for better recommendations
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Add specific skills relevant to your field
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Include certifications and projects
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Set your location preference
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Update regularly as you gain new skills
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-chart-line me-2"></i>Profile Completion
+                    </h5>
+                    <div class="progress mb-2">
+                        <div class="progress-bar" role="progressbar" style="width: {{ (user.full_name and user.education_level and user.skills and user.location_preference) and '100' or '60' }}%"></div>
+                    </div>
+                    <small class="text-muted">
+                        {{ (user.full_name and user.education_level and user.skills and user.location_preference) and 'Complete!' or 'Complete your profile for better recommendations' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function extractSkillsFromText() {
+    const resumeText = document.getElementById('resume_text').value;
+    const skillsField = document.getElementById('skills');
+    
+    if (!resumeText.trim()) {
+        alert('Please paste your resume text first!');
+        return;
+    }
+    
+    // Common skills to look for
+    const technicalSkills = [
+        'python', 'java', 'javascript', 'html', 'css', 'react', 'angular', 'vue',
+        'node.js', 'express', 'django', 'flask', 'spring', 'mysql', 'postgresql',
+        'mongodb', 'redis', 'aws', 'azure', 'docker', 'kubernetes', 'git',
+        'machine learning', 'data science', 'artificial intelligence', 'ai',
+        'android', 'ios', 'flutter', 'react native', 'xamarin',
+        'photoshop', 'illustrator', 'figma', 'sketch', 'adobe',
+        'excel', 'powerpoint', 'word', 'office', 'google analytics',
+        'seo', 'sem', 'digital marketing', 'social media', 'content writing',
+        'project management', 'agile', 'scrum', 'tensorflow', 'scikit-learn',
+        'pandas', 'numpy', 'c++', 'c#', 'php', 'ruby', 'go', 'rust'
+    ];
+    
+    const softSkills = [
+        'leadership', 'communication', 'teamwork', 'problem solving',
+        'time management', 'creativity', 'adaptability', 'critical thinking',
+        'analytical', 'research', 'presentation', 'negotiation', 'mentoring',
+        'collaboration', 'innovation', 'decision making', 'conflict resolution'
+    ];
+    
+    const textLower = resumeText.toLowerCase();
+    const foundSkills = [];
+    
+    // Check for technical skills
+    technicalSkills.forEach(skill => {
+        if (textLower.includes(skill)) {
+            foundSkills.push(skill.charAt(0).toUpperCase() + skill.slice(1));
+        }
+    });
+    
+    // Check for soft skills
+    softSkills.forEach(skill => {
+        if (textLower.includes(skill)) {
+            foundSkills.push(skill.charAt(0).toUpperCase() + skill.slice(1));
+        }
+    });
+    
+    // Remove duplicates
+    const uniqueSkills = [...new Set(foundSkills)];
+    
+    if (uniqueSkills.length > 0) {
+        // Get existing skills
+        const existingSkills = skillsField.value ? skillsField.value.split(',').map(s => s.trim()) : [];
+        
+        // Combine and remove duplicates
+        const allSkills = [...new Set([...existingSkills, ...uniqueSkills])];
+        
+        // Update skills field
+        skillsField.value = allSkills.join(', ');
+        
+        alert(`✅ Extracted ${uniqueSkills.length} skills from your resume:\n${uniqueSkills.join(', ')}`);
+    } else {
+        alert('No skills found in the resume text. Please check the text or add skills manually.');
+    }
+}
+</script>
+{% endblock %}

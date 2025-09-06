@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Recommendations - PM Internship Recommendation System{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-lightbulb me-2"></i>Your Personalized Recommendations
+            </h2>
+            <p class="lead text-muted">Based on your profile, skills, and preferences</p>
+        </div>
+    </div>
+    
+    {% if recommendations %}
+        <div class="row">
+            {% for internship in recommendations %}
+            <div class="col-lg-6 mb-4">
+                <div class="card internship-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title mb-0">{{ internship.title }}</h5>
+                            <span class="badge bg-primary">{{ internship.company_name }}</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <p class="card-text text-muted">{{ internship.about_internship[:150] }}...</p>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ internship.location }}
+                                </small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ internship.duration }}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <span class="stipend-tag">
+                                <i class="fas fa-rupee-sign me-1"></i>
+                                {{ internship.stipend }}
+                            </span>
+                        </div>
+                        
+                        {% if internship.skills_required %}
+                        <div class="mb-3">
+                            <h6 class="mb-2">
+                                <i class="fas fa-cogs me-1"></i>Required Skills:
+                            </h6>
+                            {% for skill in internship.skills_required.split(',') %}
+                                <span class="skill-tag">{{ skill.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <h6 class="mb-2">
+                                <i class="fas fa-user-graduate me-1"></i>Who Can Apply:
+                            </h6>
+                            <p class="small text-muted">{{ internship.who_can_apply[:100] }}...</p>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                Apply by: {{ internship.apply_by }}
+                            </small>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('internship_detail', internship_id=internship.id) }}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>View Details
+                                </a>
+                                <a href="{{ url_for('apply_internship', internship_id=internship.id) }}" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-paper-plane me-1"></i>Apply Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- View More Internships -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-search me-2"></i>Want to Explore More Opportunities?
+                        </h5>
+                        <p class="card-text">Browse through all available internships and find the perfect match for your career goals</p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="{{ url_for('all_internships') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-list me-2"></i>View All Internships
+                            </a>
+                            <a href="{{ url_for('profile') }}" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-user-edit me-2"></i>Update Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Refresh Recommendations -->
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh Recommendations
+                        </h6>
+                        <p class="card-text small">Get fresh recommendations based on your updated profile</p>
+                        <button class="btn btn-outline-primary btn-sm" onclick="refreshRecommendations()">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    {% else %}
+        <!-- No Recommendations -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card text-center py-5">
+                    <div class="card-body">
+                        <i class="fas fa-search feature-icon text-muted"></i>
+                        <h3 class="card-title">No Recommendations Found</h3>
+                        <p class="card-text text-muted mb-4">
+                            We couldn't find any matching internships based on your current profile. 
+                            Please complete your profile with skills and preferences to get better recommendations.
+                        </p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="{{ url_for('profile') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-edit me-2"></i>Complete Profile
+                            </a>
+                            <button class="btn btn-outline-primary btn-lg" onclick="refreshRecommendations()">
+                                <i class="fas fa-sync-alt me-2"></i>Try Again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Recommendation Tips -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-3">
+                <i class="fas fa-tips me-2"></i>Tips for Better Recommendations
+            </h3>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-cogs feature-icon text-primary"></i>
+                    <h5 class="card-title">Add More Skills</h5>
+                    <p class="card-text">Include both technical and soft skills in your profile for better matching.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-map-marker-alt feature-icon text-success"></i>
+                    <h5 class="card-title">Set Location Preference</h5>
+                    <p class="card-text">Specify your preferred work location or choose "Work From Home".</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-certificate feature-icon text-warning"></i>
+                    <h5 class="card-title">Include Certifications</h5>
+                    <p class="card-text">Add relevant certifications and projects to improve your profile.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function applyInternship(internshipId) {
+    // In a real application, this would redirect to the company's application page
+    alert('This would redirect to the company\'s application page for internship ID: ' + internshipId);
+}
+
+function refreshRecommendations() {
+    // Reload the page to get fresh recommendations
+    window.location.reload();
+}
+</script>
+{% endblock %}

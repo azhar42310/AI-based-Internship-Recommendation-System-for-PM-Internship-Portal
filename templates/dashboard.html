@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - PM Internship Recommendation System{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-2">
+                                <i class="fas fa-home me-2"></i>
+                                Welcome back, {{ user.username }}!
+                            </h2>
+                            <p class="mb-0 lead">Ready to find your perfect internship?</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <i class="fas fa-rocket" style="font-size: 4rem; opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">
+                <i class="fas fa-bolt me-2"></i>Quick Actions
+            </h3>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-user-edit feature-icon text-primary"></i>
+                    <h5 class="card-title">Complete Profile</h5>
+                    <p class="card-text">Update your skills, education, and preferences for better recommendations.</p>
+                    <a href="{{ url_for('profile') }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i>Update Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-lightbulb feature-icon text-warning"></i>
+                    <h5 class="card-title">Get Recommendations</h5>
+                    <p class="card-text">View personalized internship recommendations based on your profile.</p>
+                    <a href="{{ url_for('recommendations') }}" class="btn btn-warning">
+                        <i class="fas fa-search me-1"></i>View Recommendations
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-file-upload feature-icon text-success"></i>
+                    <h5 class="card-title">Upload Resume</h5>
+                    <p class="card-text">Upload your resume for automatic skill extraction and profile enhancement.</p>
+                    <a href="{{ url_for('profile') }}" class="btn btn-success">
+                        <i class="fas fa-upload me-1"></i>Upload Resume
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">
+                <i class="fas fa-chart-pie me-2"></i>Profile Status
+            </h3>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-info-circle me-2"></i>Profile Information
+                    </h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="mb-1"><strong>Name:</strong></p>
+                            <p class="mb-1"><strong>Email:</strong></p>
+                            <p class="mb-1"><strong>Education:</strong></p>
+                            <p class="mb-1"><strong>Stream:</strong></p>
+                            <p class="mb-1"><strong>Location:</strong></p>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-1 text-muted">{{ user.full_name or 'Not set' }}</p>
+                            <p class="mb-1 text-muted">{{ user.email }}</p>
+                            <p class="mb-1 text-muted">{{ user.education_level or 'Not set' }}</p>
+                            <p class="mb-1 text-muted">{{ user.stream or 'Not set' }}</p>
+                            <p class="mb-1 text-muted">{{ user.location_preference or 'Not set' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-cogs me-2"></i>Skills & Interests
+                    </h5>
+                    {% if user.skills %}
+                        <p class="mb-2"><strong>Skills:</strong></p>
+                        <div class="mb-3">
+                            {% for skill in (user.skills|from_json if user.skills else []) %}
+                                <span class="skill-tag">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    {% if user.certifications %}
+                        <p class="mb-2"><strong>Certifications:</strong></p>
+                        <div class="mb-3">
+                            {% for cert in (user.certifications|from_json if user.certifications else []) %}
+                                <span class="badge bg-warning text-dark me-1 mb-1">
+                                    <i class="fas fa-certificate me-1"></i>{{ cert }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    {% if not user.skills and not user.certifications %}
+                        <p class="text-muted">No skills or certifications added yet.</p>
+                        <a href="{{ url_for('profile') }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add Skills
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-12">
+            <h3 class="mb-3">
+                <i class="fas fa-history me-2"></i>Recent Activity
+            </h3>
+            <div class="card">
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <i class="fas fa-user-plus text-primary me-3"></i>
+                            <span>Account created on {{ user.created_at.strftime('%B %d, %Y') }}</span>
+                        </div>
+                        {% if user.full_name %}
+                        <div class="timeline-item">
+                            <i class="fas fa-user-edit text-success me-3"></i>
+                            <span>Profile updated</span>
+                        </div>
+                        {% endif %}
+                        {% if user.skills %}
+                        <div class="timeline-item">
+                            <i class="fas fa-cogs text-warning me-3"></i>
+                            <span>Skills added to profile</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.timeline-item:last-child {
+    border-bottom: none;
+}
+</style>
+{% endblock %}
