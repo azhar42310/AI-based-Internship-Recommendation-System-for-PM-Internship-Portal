@@ -183,10 +183,18 @@ def profile():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    user = db.session.get(User, session['user_id'])
+    # Force a fresh query from database
+    user = User.query.get(session['user_id'])
+    
+    if not user:
+        flash('User not found. Please log in again.', 'error')
+        return redirect(url_for('login'))
     
     if request.method == 'POST':
         try:
+            print(f"Profile update request received for user {user.username}")
+            print(f"Form data: {dict(request.form)}")
+            
             # Update basic profile fields
             user.full_name = request.form.get('full_name', '').strip()
             user.phone = request.form.get('phone', '').strip()
@@ -218,14 +226,31 @@ def profile():
             else:
                 user.projects = json.dumps([])
             
+            print(f"Before commit - User data: full_name={user.full_name}, phone={user.phone}, education_level={user.education_level}")
+            
             # Commit changes
             db.session.commit()
-            print(f"Profile updated for user {user.username}: {user.full_name}")
+            print(f"Profile updated successfully for user {user.username}: {user.full_name}")
+            
+            # Force a fresh query to verify the data was saved
+            db.session.expunge(user)  # Remove from session
+            fresh_user = User.query.get(session['user_id'])  # Get fresh data
+            
+            print(f"After commit - Fresh user data:")
+            print(f"  Full Name: {fresh_user.full_name}")
+            print(f"  Phone: {fresh_user.phone}")
+            print(f"  Education Level: {fresh_user.education_level}")
+            print(f"  Stream: {fresh_user.stream}")
+            print(f"  Skills: {fresh_user.skills}")
+            print(f"  Location Preference: {fresh_user.location_preference}")
+            
             flash('Profile updated successfully!', 'success')
             return redirect(url_for('profile'))
             
         except Exception as e:
             print(f"Error updating profile: {e}")
+            import traceback
+            traceback.print_exc()
             db.session.rollback()
             flash('Error updating profile. Please try again.', 'error')
             return redirect(url_for('profile'))
@@ -237,7 +262,27 @@ def recommendations():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    user = db.session.get(User, session['user_id'])
+    # Force a fresh query from database instead of using cached session data
+    user = User.query.get(session['user_id'])
+    
+    if not user:
+        flash('User not found. Please log in again.', 'error')
+        return redirect(url_for('login'))
+    
+    # Debug: Print user data to verify it's up to date
+    print(f"=== RECOMMENDATIONS DEBUG ===")
+    print(f"User ID: {user.id}")
+    print(f"Username: {user.username}")
+    print(f"Full Name: {user.full_name}")
+    print(f"Education Level: {user.education_level}")
+    print(f"Stream: {user.stream}")
+    print(f"Skills: {user.skills}")
+    print(f"Location Preference: {user.location_preference}")
+    print(f"Phone: {user.phone}")
+    print(f"Certifications: {user.certifications}")
+    print(f"Projects: {user.projects}")
+    print(f"=============================")
+    
     recommendations = get_recommendations(user, limit=5)
     
     return render_template('recommendations.html', 
@@ -547,9 +592,42 @@ def my_applications():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    user = db.session.get(User, session['user_id'])
+    user = User.query.get(session['user_id'])
     # In a real app, this would fetch from applications table
     return render_template('my_applications.html', user=user)
+
+@app.route('/test_recommendations')
+def test_recommendations():
+    """Test route to debug recommendations"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    
+    print(f"=== TEST RECOMMENDATIONS ===")
+    print(f"User: {user.username}")
+    print(f"Profile data:")
+    print(f"  Full Name: {user.full_name}")
+    print(f"  Education: {user.education_level}")
+    print(f"  Stream: {user.stream}")
+    print(f"  Skills: {user.skills}")
+    print(f"  Location: {user.location_preference}")
+    
+    # Test recommendation generation
+    recommendations = get_recommendations(user, limit=3)
+    
+    return jsonify({
+        'user_profile': {
+            'username': user.username,
+            'full_name': user.full_name,
+            'education_level': user.education_level,
+            'stream': user.stream,
+            'skills': user.skills,
+            'location_preference': user.location_preference
+        },
+        'recommendations_count': len(recommendations),
+        'recommendations': [{'title': r.title, 'company': r.company_name} for r in recommendations]
+    })
 
 def allowed_file(filename):
     """Check if file extension is allowed"""
@@ -746,9 +824,19 @@ def get_recommendations(user, limit=5):
     internships = Internship.query.all()
     
     if not internships:
+        print("No internships found in database!")
         return []
     
     scored_internships = []
+    
+    print(f"=== RECOMMENDATION ALGORITHM ===")
+    print(f"Processing {len(internships)} internships for user: {user.username}")
+    print(f"User profile summary:")
+    print(f"  Skills: {user.skills}")
+    print(f"  Education: {user.education_level}")
+    print(f"  Stream: {user.stream}")
+    print(f"  Location: {user.location_preference}")
+    print(f"=================================")
     
     for internship in internships:
         score = 0
@@ -764,14 +852,18 @@ def get_recommendations(user, limit=5):
                 skill_matches = len(set(required_skills) & set(user_skills_lower))
                 skill_score = (skill_matches / len(required_skills)) * 40 if required_skills else 0
                 score += skill_score
-            except:
+                
+                if skill_score > 0:
+                    print(f"  {internship.title}: Skill match = {skill_matches}/{len(required_skills)} = {skill_score:.1f} points")
+            except Exception as e:
+                print(f"  Error processing skills for {internship.title}: {e}")
                 pass
         
         # Education level matching (20 points)
         if user.education_level and internship.who_can_apply:
             education_keywords = {
-                'bachelor': ['bachelor', 'btech', 'bca', 'be', 'bsc', 'ba', 'bcom'],
-                'master': ['master', 'mba', 'ms', 'ma', 'mtech', 'mca'],
+                "bachelor's degree": ['bachelor', 'btech', 'bca', 'be', 'bsc', 'ba', 'bcom'],
+                "master's degree": ['master', 'mba', 'ms', 'ma', 'mtech', 'mca'],
                 'phd': ['phd', 'doctor', 'doctorate'],
                 'diploma': ['diploma', 'certificate'],
                 'high school': ['high school', '12th', 'intermediate']
@@ -784,6 +876,7 @@ def get_recommendations(user, limit=5):
                 for keyword in education_keywords[user_edu_lower]:
                     if keyword in internship_text_lower:
                         score += 20
+                        print(f"  {internship.title}: Education match = +20 points")
                         break
         
         # Stream matching (15 points)
@@ -808,6 +901,7 @@ def get_recommendations(user, limit=5):
                 for keyword in stream_keywords[user_stream_lower]:
                     if keyword in internship_text_lower:
                         score += 15
+                        print(f"  {internship.title}: Stream match = +15 points")
                         break
         
         # Location preference (15 points)
@@ -817,8 +911,10 @@ def get_recommendations(user, limit=5):
             
             if user_loc_lower in internship_loc_lower or internship_loc_lower == 'work from home':
                 score += 15
+                print(f"  {internship.title}: Location match = +15 points")
             elif 'work from home' in internship_loc_lower:
                 score += 10
+                print(f"  {internship.title}: Work from home = +10 points")
         
         # Duration preference (10 points)
         if internship.duration:
@@ -834,9 +930,22 @@ def get_recommendations(user, limit=5):
         score += 5
         
         scored_internships.append((internship, score))
+        
+        if score > 5:  # Only print if score is above base score
+            print(f"  {internship.title}: Total score = {score:.1f}")
     
     # Sort by score and return top results
     scored_internships.sort(key=lambda x: x[1], reverse=True)
+    
+    print(f"Top {limit} recommendations:")
+    for i, (internship, score) in enumerate(scored_internships[:limit]):
+        print(f"  {i+1}. {internship.title} - Score: {score:.1f}")
+    
+    if not scored_internships:
+        print("WARNING: No internships scored! Check if user profile has data.")
+    
+    print(f"=== END RECOMMENDATION ALGORITHM ===")
+    
     return [item[0] for item in scored_internships[:limit]]
 
 if __name__ == '__main__':

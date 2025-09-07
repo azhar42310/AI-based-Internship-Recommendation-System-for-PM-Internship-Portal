@@ -143,15 +143,13 @@
                         <!-- File Upload -->
                         <div class="mb-3">
                             <label for="resume" class="form-label">Upload Resume (PDF/DOCX)</label>
-                            <form method="POST" action="{{ url_for('upload_resume') }}" enctype="multipart/form-data">
-                                <div class="input-group">
-                                    <input type="file" class="form-control" id="resume" name="resume" 
-                                           accept=".pdf,.docx,.doc">
-                                    <button class="btn btn-success" type="submit">
-                                        <i class="fas fa-upload me-1"></i>Upload & Extract Skills
-                                    </button>
-                                </div>
-                            </form>
+                            <div class="input-group">
+                                <input type="file" class="form-control" id="resume" name="resume" 
+                                       accept=".pdf,.docx,.doc">
+                                <button class="btn btn-success" type="button" onclick="uploadResume()">
+                                    <i class="fas fa-upload me-1"></i>Upload & Extract Skills
+                                </button>
+                            </div>
                             <div class="form-text">
                                 <strong>Supported formats:</strong> PDF, DOCX<br>
                                 <strong>Note:</strong> If file upload fails, you can manually add skills below or paste resume text in the skills field.
@@ -163,21 +161,19 @@
                             <label for="resume_text" class="form-label">
                                 <i class="fas fa-paste me-2"></i>Or Paste Resume Text Here
                             </label>
-                            <form method="POST" action="{{ url_for('extract_from_text') }}">
-                                <textarea class="form-control" id="resume_text" name="resume_text" rows="6" 
-                                          placeholder="Paste your complete resume text here to automatically extract all profile information..."></textarea>
-                                <div class="form-text">
-                                    <strong>What will be extracted:</strong> Name, Phone, Email, Education, Stream, Skills, Certifications, Projects, Location
-                                </div>
-                                <div class="mt-2">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-magic me-1"></i>Extract All Profile Data
-                                    </button>
-                                    <button type="button" class="btn btn-outline-primary ms-2" onclick="extractSkillsFromText()">
-                                        <i class="fas fa-cogs me-1"></i>Extract Skills Only
-                                    </button>
-                                </div>
-                            </form>
+                            <textarea class="form-control" id="resume_text" name="resume_text" rows="6" 
+                                      placeholder="Paste your complete resume text here to automatically extract all profile information..."></textarea>
+                            <div class="form-text">
+                                <strong>What will be extracted:</strong> Name, Phone, Email, Education, Stream, Skills, Certifications, Projects, Location
+                            </div>
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-primary" onclick="extractAllProfileData()">
+                                    <i class="fas fa-magic me-1"></i>Extract All Profile Data
+                                </button>
+                                <button type="button" class="btn btn-outline-primary ms-2" onclick="extractSkillsFromText()">
+                                    <i class="fas fa-cogs me-1"></i>Extract Skills Only
+                                </button>
+                            </div>
                         </div>
                         
                         {% if user.resume_path %}
@@ -250,6 +246,63 @@
 
 {% block scripts %}
 <script>
+function uploadResume() {
+    const fileInput = document.getElementById('resume');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Please select a file first!');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('resume', file);
+    
+    fetch('{{ url_for("upload_resume") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            alert('Error uploading resume. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error uploading resume. Please try again.');
+    });
+}
+
+function extractAllProfileData() {
+    const resumeText = document.getElementById('resume_text').value;
+    
+    if (!resumeText.trim()) {
+        alert('Please paste your resume text first!');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('resume_text', resumeText);
+    
+    fetch('{{ url_for("extract_from_text") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            alert('Error extracting profile data. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error extracting profile data. Please try again.');
+    });
+}
+
 function extractSkillsFromText() {
     const resumeText = document.getElementById('resume_text').value;
     const skillsField = document.getElementById('skills');
